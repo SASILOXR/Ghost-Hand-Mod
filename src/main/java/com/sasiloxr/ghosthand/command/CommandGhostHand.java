@@ -1,13 +1,10 @@
 package com.sasiloxr.ghosthand.command;
 
 import com.sasiloxr.ghosthand.GhostHandMod;
-import com.sun.org.apache.xerces.internal.impl.xpath.regex.REUtil;
-import net.minecraft.block.BlockPressurePlate;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.ChatComponentText;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 
 public class CommandGhostHand extends CommandBase {
     @Override

@@ -37,10 +37,6 @@ public class MouseOverHandler {
 
     private static void call(){
         getEntity();
-        System.out.println(mc.thePlayer.getDisplayNameString());
-        if (mc.objectMouseOver.entityHit != null){
-            System.out.println(mc.objectMouseOver.entityHit.getDisplayName().getUnformattedText());
-        }
     }
 
 

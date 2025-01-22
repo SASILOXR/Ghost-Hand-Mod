@@ -3,7 +3,6 @@ package com.sasiloxr.ghosthand;
 import com.sasiloxr.ghosthand.command.CommandGhostHand;
 import com.sasiloxr.ghosthand.mouseoverhandler.MouseOverHandler;
 import net.minecraftforge.client.ClientCommandHandler;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.common.Mod;
@@ -13,7 +12,6 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 import java.io.File;
-import java.nio.file.AtomicMoveNotSupportedException;
 
 @Mod(modid = GhostHandMod.MODID, name = GhostHandMod.NAME, version = GhostHandMod.VERSION, acceptedMinecraftVersions = "1.8.9")
 public class GhostHandMod
