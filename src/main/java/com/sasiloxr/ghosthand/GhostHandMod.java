@@ -1,7 +1,9 @@
 package com.sasiloxr.ghosthand;
 
 import com.sasiloxr.ghosthand.command.CommandGhostHand;
+import com.sasiloxr.ghosthand.command.CommandTeamInvisible;
 import com.sasiloxr.ghosthand.mouseoverhandler.MouseOverHandler;
+import com.sasiloxr.ghosthand.render.TeamInvisible;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
@@ -14,53 +16,61 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import java.io.File;
 
 @Mod(modid = GhostHandMod.MODID, name = GhostHandMod.NAME, version = GhostHandMod.VERSION, acceptedMinecraftVersions = "1.8.9")
-public class GhostHandMod
-{
+public class GhostHandMod {
     public static final String MODID = "ghosthand";
     public static final String NAME = "GhostHand";
-    public static final String VERSION = "1.0";
+    public static final String VERSION = "2.0";
     public static File configFile;
-    public static boolean enabled  = true;
+    public static boolean enabled = true;
     public static Configuration config;
+    public static TeamInvisible teamInvisible;
 
 
     @EventHandler
-    public void preInit(FMLPreInitializationEvent event){
+    public void preInit(FMLPreInitializationEvent event) {
         configFile = event.getSuggestedConfigurationFile();
 
     }
 
     @EventHandler
-    public void init(FMLInitializationEvent event)
-    {
+    public void init(FMLInitializationEvent event) {
 
         ClientCommandHandler.instance.registerCommand(new CommandGhostHand());
+        ClientCommandHandler.instance.registerCommand(new CommandTeamInvisible());
         config = new Configuration(configFile);
-        loadConfig();
+        teamInvisible = new TeamInvisible();
         MouseOverHandler handler = new MouseOverHandler();
+        loadConfig();
 
     }
 
     @EventHandler
-    public void postInit(FMLPostInitializationEvent event){
+    public void postInit(FMLPostInitializationEvent event) {
 
     }
-    public static void saveConfig(){
+
+    public static void saveConfig() {
         updateConfig(false);
         config.save();
     }
 
-    public static void loadConfig(){
+    public static void loadConfig() {
         config.load();
         updateConfig(true);
     }
 
-    public static void updateConfig(boolean load){
+    public static void updateConfig(boolean load) {
         Property property = config.get("GhostHand", "enable", false);
-        if (load){
+        Property property1 = config.get("TeamInvisible", "enable", false);
+        Property property2 = config.get("TeamInvisible", "range", 3.0);
+        if (load) {
+            teamInvisible.enabled = property1.getBoolean();
+            teamInvisible.range = (float) property2.getDouble();
             enabled = property.getBoolean();
-        }else{
+        } else {
             property.setValue(enabled);
+            property1.setValue(teamInvisible.enabled);
+            property2.setValue(teamInvisible.range);
         }
     }
 }

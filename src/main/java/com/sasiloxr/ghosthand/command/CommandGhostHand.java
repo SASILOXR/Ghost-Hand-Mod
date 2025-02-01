@@ -19,21 +19,23 @@ public class CommandGhostHand extends CommandBase {
 
     @Override
     public void processCommand(ICommandSender sender, String[] args) throws CommandException {
-        if (args.length > 2){
+        if (args.length > 2) {
             sender.addChatMessage(new ChatComponentText("Invalid Option"));
             return;
         }
-        if (args.length == 0){
+        if (args.length == 0) {
             sender.addChatMessage(new ChatComponentText("Usage: /ghosthand [true/false]"));
+            sender.addChatMessage(new ChatComponentText("GhostHand status:" + GhostHandMod.enabled));
+            return;
         }
 
         String opt = args[0];
 
         boolean enabled = Boolean.parseBoolean(opt);
-        if (enabled){
+        if (enabled) {
             GhostHandMod.enabled = true;
             sender.addChatMessage(new ChatComponentText("GhostHand enable"));
-        }else{
+        } else {
             GhostHandMod.enabled = false;
             sender.addChatMessage(new ChatComponentText("GhostHand disable"));
         }
