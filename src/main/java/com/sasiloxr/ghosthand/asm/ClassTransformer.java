@@ -12,10 +12,15 @@ import net.minecraft.launchwrapper.IClassTransformer;
 public class ClassTransformer implements IClassTransformer, Opcodes {
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
-        boolean findTransform = transformedName.equals("net.minecraft.client.renderer.entity.layers.LayerArmorBase");
-        if (findTransform) {
-            System.out.println("find!!!!!!!!!!!!!!!!!!");
+        boolean findTeamInvisibleClass = transformedName.equals("net.minecraft.client.renderer.entity.layers.LayerArmorBase");
+        boolean findGhostHandClass = transformedName.equals("net.minecraft.client.renderer.EntityRenderer");
+        if (findTeamInvisibleClass) {
             return transformClass(basicClass);
+        }
+        if (findGhostHandClass) {
+            System.out.println("find ghost hand class");
+            transformClass2(basicClass);
+            return basicClass;
         }
         return basicClass;
     }
@@ -28,7 +33,6 @@ public class ClassTransformer implements IClassTransformer, Opcodes {
             boolean isRenderLayer = methodNode.name.equals(ASMLoadingPlugin.isObf ? "a" : "renderLayer") && methodNode.desc.equals(ASMLoadingPlugin.isObf ? "(Lpr;FFFFFFFI)V" : "(Lnet/minecraft/entity/EntityLivingBase;FFFFFFFI)V");
             if (isRenderLayer) {
                 for (AbstractInsnNode insNode : methodNode.instructions.toArray()) {
-                    System.out.println(isFindNode(insNode));
                     if (isFindNode(insNode)) {
                         AbstractInsnNode previous = insNode.getPrevious();
                         AbstractInsnNode previous1 = previous.getPrevious();
@@ -47,7 +51,6 @@ public class ClassTransformer implements IClassTransformer, Opcodes {
                         list.add(new InsnNode(RETURN));
 
                         methodNode.instructions.insertBefore(labelNode, list);
-                        System.out.println("asm success!!!!!!!!!!!!!!!!");
 
 
 //                        methodNode.instructions.remove(previous2);
@@ -65,13 +68,32 @@ public class ClassTransformer implements IClassTransformer, Opcodes {
         return classWriter.toByteArray();
     }
 
-    public Boolean isFindNode(AbstractInsnNode insnNode) {
-        if (insnNode instanceof MethodInsnNode) {
-            System.out.println(((MethodInsnNode) insnNode).name);
-            System.out.println(((MethodInsnNode) insnNode).owner);
-            System.out.println(((MethodInsnNode) insnNode).desc);
+    public byte[] transformClass2(byte[] basicClass) {
+        ClassNode classNode = new ClassNode();
+        ClassReader reader = new ClassReader(basicClass);
+        reader.accept(classNode, 0);
+        for (MethodNode methodNode : classNode.methods) {
+            boolean isGetMouseOver = methodNode.name.equals("getMouseOver");
+            if (isGetMouseOver) {
+                for (AbstractInsnNode insnNode : methodNode.instructions.toArray()) {
+                    if (isFindNode2(insnNode)) {
+                        //add some abstractinsnnode
+                    }
+                }
+            }
         }
+        ClassWriter classWriter = new ClassWriter(0);
+        classNode.accept(classWriter);
+        // finish all to change
+        return basicClass;
+    }
+
+    public Boolean isFindNode(AbstractInsnNode insnNode) {
         return insnNode instanceof MethodInsnNode && insnNode.getOpcode() == INVOKEVIRTUAL && ((MethodInsnNode) insnNode).name.equals(ASMLoadingPlugin.isObf ? "a" : "getCurrentArmor") && ((MethodInsnNode) insnNode).owner.equals(ASMLoadingPlugin.isObf ? "bkn" : "net/minecraft/client/renderer/entity/layers/LayerArmorBase") && ((MethodInsnNode) insnNode).desc.equals(ASMLoadingPlugin.isObf ? "(Lpr;I)Lzx;" : "(Lnet/minecraft/entity/EntityLivingBase;I)Lnet/minecraft/item/ItemStack;");
 
+    }
+
+    public Boolean isFindNode2(AbstractInsnNode insnNode) {
+        return insnNode instanceof MethodInsnNode && insnNode.getOpcode() == INVOKEVIRTUAL && ((MethodInsnNode) insnNode).name.equals("getEntitiesInAABBexcluding") && ((MethodInsnNode) insnNode).owner.equals("net/minecraft/client/multiplayer/WorldClient") && ((MethodInsnNode) insnNode).desc.equals("(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/AxisAlignedBB;Lcom/google/common/base/Predicate;)Ljava/util/List;");
     }
 }

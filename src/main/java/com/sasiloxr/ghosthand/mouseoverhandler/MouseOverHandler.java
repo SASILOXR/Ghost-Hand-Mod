@@ -12,9 +12,11 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItemFrame;
 import net.minecraft.util.*;
-import net.minecraftforge.client.event.MouseEvent;
+import net.minecraftforge.client.event.*;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.player.PlayerUseItemEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.util.Iterator;
 import java.util.List;
@@ -24,74 +26,66 @@ public class MouseOverHandler {
     static Minecraft mc = Minecraft.getMinecraft();
     private static Entity pointedEntity;
 
-    public MouseOverHandler(){
+    public MouseOverHandler() {
         MinecraftForge.EVENT_BUS.register(this);
     }
 
     @SubscribeEvent
-    public void handler(MouseEvent event){
-       if (event.buttonstate && event.button >= 0 && nullCheck() && GhostHandMod.enabled){
-           call();
-       }
+    public void handler(MouseEvent event) {
+        System.out.println("mouse event trigger ok");
+        if (nullCheck() && GhostHandMod.enabled) {
+            call();
+        }
     }
 
-    private static void call(){
+    private static void call() {
         getEntity();
     }
 
 
-    private static void getEntity(){
+    private static void getEntity() {
         float partialTicks = 1.0F;
         Entity entity = mc.getRenderViewEntity();
-        if (entity == null || mc.theWorld == null){
+        if (entity == null || mc.theWorld == null) {
             return;
         }
 
         mc.mcProfiler.startSection("pick");
         mc.pointedEntity = null;
         double reach = mc.playerController.getBlockReachDistance();
-        mc.objectMouseOver = entity.rayTrace(reach,partialTicks);
+        mc.objectMouseOver = entity.rayTrace(reach, partialTicks);
         double realReach = reach;
         Vec3 positionEyes = entity.getPositionEyes(partialTicks);
         boolean flag = false;
         int i = 3;
 
-        if (mc.playerController.extendedReach()){
+        if (mc.playerController.extendedReach()) {
             reach = 6.0D;
             realReach = 6.0D;
-        }else{
-           if (reach > 3.0D){
-               flag = true;
-           }
+        } else {
+            if (reach > 3.0D) {
+                flag = true;
+            }
         }
 
-        if (mc.objectMouseOver != null){
+        if (mc.objectMouseOver != null) {
             realReach = mc.objectMouseOver.hitVec.distanceTo(positionEyes);
         }
 
         Vec3 lookVec = entity.getLook(partialTicks);
-        Vec3 reachPosition = positionEyes.addVector(lookVec.xCoord * reach, lookVec.yCoord * reach , lookVec.zCoord * reach);
+        Vec3 reachPosition = positionEyes.addVector(lookVec.xCoord * reach, lookVec.yCoord * reach, lookVec.zCoord * reach);
 
         pointedEntity = null;
         Vec3 vec3 = null;
         float f = 1.0F;
 
 
-        List<Entity> list = mc.theWorld.getEntitiesInAABBexcluding(entity, entity.getEntityBoundingBox().addCoord(lookVec.xCoord * reach, lookVec.yCoord * reach, lookVec.zCoord * reach).expand((double)f, (double)f, (double)f), Predicates.and(EntitySelectors.NOT_SPECTATING, new Predicate<Entity>()
-        {
-            public boolean apply(Entity p_apply_1_)
-            {
+        List<Entity> list = mc.theWorld.getEntitiesInAABBexcluding(entity, entity.getEntityBoundingBox().addCoord(lookVec.xCoord * reach, lookVec.yCoord * reach, lookVec.zCoord * reach).expand((double) f, (double) f, (double) f), Predicates.and(EntitySelectors.NOT_SPECTATING, new Predicate<Entity>() {
+            public boolean apply(Entity p_apply_1_) {
                 return p_apply_1_.canBeCollidedWith();
             }
         }));
-//        list = Lists.<Entity>newArrayList();
-        Iterator<Entity> iterator = list.iterator();
-        while (iterator.hasNext()){
-            Entity entity1 = iterator.next();
-            if (Utils.isTeamMate(entity1)){
-                iterator.remove();
-            }
-        }
+        list = handlerList(list);
         double realreach1 = realReach;
         for (Entity entity1 : list) {
             float CollisionBorderSize = entity1.getCollisionBorderSize();
@@ -123,14 +117,14 @@ public class MouseOverHandler {
             }
 
         }
-        if (pointedEntity != null && flag && positionEyes.distanceTo(vec3) > 3.0D){
+        if (pointedEntity != null && flag && positionEyes.distanceTo(vec3) > 3.0D) {
             pointedEntity = null;
             mc.objectMouseOver = new MovingObjectPosition(MovingObjectPosition.MovingObjectType.MISS, vec3, (EnumFacing) null, new BlockPos(vec3));
         }
 
-        if (pointedEntity != null && (realreach1 < realReach || mc.objectMouseOver == null)){
+        if (pointedEntity != null && (realreach1 < realReach || mc.objectMouseOver == null)) {
             mc.objectMouseOver = new MovingObjectPosition(pointedEntity, vec3);
-            if (pointedEntity instanceof EntityLivingBase || pointedEntity instanceof EntityItemFrame){
+            if (pointedEntity instanceof EntityLivingBase || pointedEntity instanceof EntityItemFrame) {
                 mc.pointedEntity = pointedEntity;
             }
         }
@@ -143,4 +137,17 @@ public class MouseOverHandler {
         return mc.thePlayer != null && mc.theWorld != null;
     }
 
+    private static List<Entity> handlerList(List<Entity> list) {
+        list = Lists.<Entity>newArrayList();
+        Iterator<Entity> iterator = list.iterator();
+        while (iterator.hasNext()) {
+            Entity entity1 = iterator.next();
+            if (Utils.isTeamMate(entity1)) {
+                iterator.remove();
+            }
+        }
+        return list;
+    }
+
 }
+
