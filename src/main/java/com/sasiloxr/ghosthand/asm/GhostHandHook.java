@@ -1,6 +1,7 @@
 package com.sasiloxr.ghosthand.asm;
 
 import com.google.common.collect.Lists;
+import com.sasiloxr.ghosthand.GhostHandMod;
 import com.sasiloxr.ghosthand.utils.Utils;
 import net.minecraft.entity.Entity;
 
@@ -15,7 +16,12 @@ public class GhostHandHook {
     }
 
     public List<Entity> handlerList(List<Entity> list) {
-        list = Lists.<Entity>newArrayList();
+        if (!GhostHandMod.enabled) {
+            return list;
+        }
+        if (GhostHandMod.legit) {
+            return list;
+        }
         Iterator<Entity> iterator = list.iterator();
         while (iterator.hasNext()) {
             Entity entity1 = iterator.next();

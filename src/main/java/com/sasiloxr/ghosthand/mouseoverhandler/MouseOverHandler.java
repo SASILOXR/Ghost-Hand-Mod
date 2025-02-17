@@ -32,8 +32,7 @@ public class MouseOverHandler {
 
     @SubscribeEvent
     public void handler(MouseEvent event) {
-        System.out.println("mouse event trigger ok");
-        if (nullCheck() && GhostHandMod.enabled) {
+        if (nullCheck() && GhostHandMod.enabled && GhostHandMod.legit) {
             call();
         }
     }
@@ -138,7 +137,6 @@ public class MouseOverHandler {
     }
 
     private static List<Entity> handlerList(List<Entity> list) {
-        list = Lists.<Entity>newArrayList();
         Iterator<Entity> iterator = list.iterator();
         while (iterator.hasNext()) {
             Entity entity1 = iterator.next();

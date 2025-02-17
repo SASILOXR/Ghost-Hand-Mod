@@ -19,8 +19,7 @@ public class ClassTransformer implements IClassTransformer, Opcodes {
         }
         if (findGhostHandClass) {
             System.out.println("find ghost hand class");
-            transformClass2(basicClass);
-            return basicClass;
+            return transformClass2(basicClass);
         }
         return basicClass;
     }
@@ -73,11 +72,22 @@ public class ClassTransformer implements IClassTransformer, Opcodes {
         ClassReader reader = new ClassReader(basicClass);
         reader.accept(classNode, 0);
         for (MethodNode methodNode : classNode.methods) {
-            boolean isGetMouseOver = methodNode.name.equals("getMouseOver");
+            boolean isGetMouseOver = methodNode.name.equals(ASMLoadingPlugin.isObf ? "a" : "getMouseOver") && methodNode.desc.equals("(F)V");
             if (isGetMouseOver) {
+                System.out.println("find mouseover");
                 for (AbstractInsnNode insnNode : methodNode.instructions.toArray()) {
                     if (isFindNode2(insnNode)) {
+                        System.out.println("find insnnode");
                         //add some abstractinsnnode
+                        AbstractInsnNode next = insnNode.getNext();
+                        InsnList list = new InsnList();
+                        list.add(new FieldInsnNode(GETSTATIC, "com/sasiloxr/ghosthand/asm/GhostHandHook", "INSTANCE", "Lcom/sasiloxr/ghosthand/asm/GhostHandHook;"));
+                        list.add(new VarInsnNode(ALOAD, 14));
+                        list.add(new MethodInsnNode(INVOKEVIRTUAL, "com/sasiloxr/ghosthand/asm/GhostHandHook", "handlerList", "(Ljava/util/List;)Ljava/util/List;"));
+                        list.add(new VarInsnNode(ASTORE, 14));
+                        methodNode.instructions.insert(next, list);
+                        System.out.println("success inject");
+
                     }
                 }
             }
@@ -85,7 +95,7 @@ public class ClassTransformer implements IClassTransformer, Opcodes {
         ClassWriter classWriter = new ClassWriter(0);
         classNode.accept(classWriter);
         // finish all to change
-        return basicClass;
+        return classWriter.toByteArray();
     }
 
     public Boolean isFindNode(AbstractInsnNode insnNode) {
@@ -94,6 +104,6 @@ public class ClassTransformer implements IClassTransformer, Opcodes {
     }
 
     public Boolean isFindNode2(AbstractInsnNode insnNode) {
-        return insnNode instanceof MethodInsnNode && insnNode.getOpcode() == INVOKEVIRTUAL && ((MethodInsnNode) insnNode).name.equals("getEntitiesInAABBexcluding") && ((MethodInsnNode) insnNode).owner.equals("net/minecraft/client/multiplayer/WorldClient") && ((MethodInsnNode) insnNode).desc.equals("(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/AxisAlignedBB;Lcom/google/common/base/Predicate;)Ljava/util/List;");
+        return insnNode instanceof MethodInsnNode && insnNode.getOpcode() == INVOKEVIRTUAL && ((MethodInsnNode) insnNode).name.equals(ASMLoadingPlugin.isObf ? "a" : "getEntitiesInAABBexcluding") && ((MethodInsnNode) insnNode).owner.equals(ASMLoadingPlugin.isObf ? "bdb" : "net/minecraft/client/multiplayer/WorldClient") && ((MethodInsnNode) insnNode).desc.equals(ASMLoadingPlugin.isObf ? "(Lpk;Laug;Lcom/google/common/base/Predicate;)Ljava/util/List;" : "(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/AxisAlignedBB;Lcom/google/common/base/Predicate;)Ljava/util/List;");
     }
 }

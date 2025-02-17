@@ -1,5 +1,6 @@
 package com.sasiloxr.ghosthand;
 
+import com.sasiloxr.ghosthand.asm.GhostHandHook;
 import com.sasiloxr.ghosthand.command.CommandGhostHand;
 import com.sasiloxr.ghosthand.command.CommandTeamInvisible;
 import com.sasiloxr.ghosthand.mouseoverhandler.MouseOverHandler;
@@ -19,9 +20,10 @@ import java.io.File;
 public class GhostHandMod {
     public static final String MODID = "ghosthand";
     public static final String NAME = "GhostHand";
-    public static final String VERSION = "2.0";
+    public static final String VERSION = "3.0";
     public static File configFile;
     public static boolean enabled = true;
+    public static boolean legit = true;
     public static Configuration config;
     public static TeamInvisible teamInvisible;
 
@@ -39,6 +41,7 @@ public class GhostHandMod {
         ClientCommandHandler.instance.registerCommand(new CommandTeamInvisible());
         config = new Configuration(configFile);
         teamInvisible = new TeamInvisible();
+        new GhostHandHook();
         MouseOverHandler handler = new MouseOverHandler();
         loadConfig();
 
@@ -61,14 +64,17 @@ public class GhostHandMod {
 
     public static void updateConfig(boolean load) {
         Property property = config.get("GhostHand", "enable", false);
+        Property property3 = config.get("GhostHand", "legit", true);
         Property property1 = config.get("TeamInvisible", "enable", false);
         Property property2 = config.get("TeamInvisible", "range", 3.0);
         if (load) {
             teamInvisible.enabled = property1.getBoolean();
             teamInvisible.range = (float) property2.getDouble();
             enabled = property.getBoolean();
+            legit = property3.getBoolean();
         } else {
             property.setValue(enabled);
+            property3.setValue(legit);
             property1.setValue(teamInvisible.enabled);
             property2.setValue(teamInvisible.range);
         }
