@@ -20,7 +20,7 @@ import java.io.File;
 public class GhostHandMod {
     public static final String MODID = "ghosthand";
     public static final String NAME = "GhostHand";
-    public static final String VERSION = "3.0";
+    public static final String VERSION = "4.0";
     public static File configFile;
     public static boolean enabled = true;
     public static boolean legit = true;
