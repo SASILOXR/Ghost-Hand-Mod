@@ -18,12 +18,15 @@ plugins {
     id "net.minecraftforge.gradle.forge" version "2.0.2"
 }
 */
-version = "1.0"
+def date = new Date()
+def formattedDate  = date.format("MMdd")
+version = "${formattedDate}"
 group = "com.sasiloxr.Ghosthand" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "Ghosthand"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
+
 
 minecraft {
     version = "1.8.9-11.15.1.2318-1.8.9"

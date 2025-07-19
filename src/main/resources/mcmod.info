@@ -1,13 +1,13 @@
 [
 {
   "modid": "NoMouseOver",
-  "name": "NoMouseOver Mod",
+  "name": "NoMouseOver",
   "description": "your teammate can't block your hit",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "",
   "updateUrl": "",
-  "authorList": ["Ewimo"],
+  "authorList": ["SASILOXR"],
   "credits": "",
   "logoFile": "",
   "screenshots": [],
